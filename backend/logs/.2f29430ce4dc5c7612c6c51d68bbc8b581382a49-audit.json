@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/Users/tigran/Desktop/SmartChef/backend/logs/.2f29430ce4dc5c7612c6c51d68bbc8b581382a49-audit.json",
+    "files": [
+        {
+            "date": 1753419869109,
+            "name": "/Users/tigran/Desktop/SmartChef/backend/logs/app-2025-07-25.log",
+            "hash": "141a22ede7a94db7a9ec297dc7fb3a5b2cad584854172a9f41c198ac23462ad5"
+        }
+    ],
+    "hashType": "sha256"
+}

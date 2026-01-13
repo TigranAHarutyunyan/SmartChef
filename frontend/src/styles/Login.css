@@ -1,0 +1,492 @@
+/* ======== Animations ======== */
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+/* ==================== MAIN CONTAINER ==================== */
+.loginContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  transition: all 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.loginContainer.lightMode {
+  background: linear-gradient(to bottom right, #000000, #126147);
+  color: #111827;
+}
+
+.loginContainer.darkMode {
+  background: #111827;
+  color: #ffffff;
+}
+
+/* ==================== BACKGROUND ELEMENTS ==================== */
+.backgroundElement {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(48px);
+  opacity: 0.2;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.backgroundElement1 {
+  top: 25%;
+  left: 25%;
+  width: 288px;
+  height: 288px;
+}
+
+.backgroundElement2 {
+  bottom: 25%;
+  right: 25%;
+  width: 384px;
+  height: 384px;
+  animation-delay: 1s;
+}
+
+.lightMode .backgroundElement1 {
+  background: #60a5fa;
+}
+
+.lightMode .backgroundElement2 {
+  background: #34d399;
+}
+
+.darkMode .backgroundElement1 {
+  background: #10b981;
+}
+
+.darkMode .backgroundElement2 {
+  background: #3b82f6;
+}
+
+/* ==================== LOGIN CARD ==================== */
+.loginCard {
+  position: relative;
+  width: 100%;
+  max-width: 448px;
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  transition: all 0.5s ease;
+}
+
+.lightMode .loginCard {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.darkMode .loginCard {
+  border: 1px solid #374151;
+  background: #1f2937;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+}
+
+/* ==================== THEME TOGGLE ==================== */
+.loginThemeToggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  border: 2px solid #0f4e39;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginThemeToggle:hover {
+  transform: rotate(180deg) scale(1.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.lightMode .loginThemeToggle {
+  color: #ead00b;
+  background: transparent;
+}
+
+.darkMode .loginThemeToggle {
+  color: #fbbf24;
+  background: transparent;
+}
+
+/* ==================== LOGO SECTION ==================== */
+.logoContainer {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+
+.loginIconPng {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+}
+
+.lightMode .subtitle {
+  color: #6b7280;
+}
+
+.darkMode .subtitle {
+  color: #9ca3af;
+}
+
+/* ==================== FORM STYLES ==================== */
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+
+}
+
+.lightMode .inputLabel {
+  color: #374151;
+}
+
+.darkMode .inputLabel {
+  color: #d1d5db;
+}
+
+.loginInputContainer {
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.lightMode .inputIcon {
+  color: #6b7280;
+}
+
+.darkMode .inputIcon {
+  color: #9ca3af;
+}
+
+.inputField {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.passwordField {
+  padding-right: 3rem;
+}
+
+.lightMode .inputField {
+  border-color: #d1d5db;
+  background: rgba(255, 255, 255, 0.5);
+  color: #111827;
+}
+
+.lightMode .inputField::placeholder {
+  color: #6b7280;
+}
+
+.lightMode .inputField:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.darkMode .inputField {
+  border-color: #4b5563;
+  background: #374151;
+  color: #ffffff;
+}
+
+.darkMode .inputField::placeholder {
+  color: #9ca3af;
+}
+
+.darkMode .inputField:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.lightMode .passwordToggle {
+  color: #6b7280;
+}
+
+.lightMode .passwordToggle:hover {
+  color: #374151;
+}
+
+.darkMode .passwordToggle {
+  color: #9ca3af;
+}
+
+.darkMode .passwordToggle:hover {
+  color: #d1d5db;
+}
+
+/* ==================== REMEMBER & FORGOT ==================== */
+.rememberForgotRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rememberLabel {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.lightMode .rememberLabel {
+  color: #374151;
+}
+
+.darkMode .rememberLabel {
+  color: #d1d5db;
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  accent-color: #10b981;
+  cursor: pointer;
+}
+
+/* ==================== SUBMIT BUTTON ==================== */
+.submitButton {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+  transition: all 0.3s ease;
+  transform: scale(1);
+  outline: none;
+}
+
+/* ==================== SIGNUP TEXT ==================== */
+.signupText {
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.lightMode .signupText {
+  color: #6b7280;
+}
+
+.darkMode .signupText {
+  color: #9ca3af;
+}
+
+.signupLink {
+  color: #10b981;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.signupLink:hover {
+  color: #059669;
+}
+
+/* ==================== SOCIAL SECTION ==================== */
+.socialSection {
+  margin-top: 2rem;
+}
+
+.divider {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.dividerLine {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.lightMode .dividerLine {
+  background: #d1d5db;
+}
+
+.darkMode .dividerLine {
+  background: #4b5563;
+}
+
+.dividerText {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+.lightMode .dividerText {
+  color: #6b7280;
+}
+
+.darkMode .dividerText {
+  color: #9ca3af;
+}
+
+.dividerTextBackground {
+  padding: 0 0.5rem;
+}
+
+.lightMode .dividerTextBackground {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.darkMode .dividerTextBackground {
+  background: #1f2937;
+}
+
+.socialButton {
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+  transform: scale(1);
+}
+
+.lightMode .socialButton {
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #6b7280;
+}
+
+.lightMode .socialButton:hover {
+  background: #f9fafb;
+  transform: scale(1.05);
+}
+
+.darkMode .socialButton {
+  border-color: #4b5563;
+  background: #374151;
+  color: #ffffff;
+}
+
+.darkMode .socialButton:hover {
+  background: #4b5563;
+  transform: scale(1.05);
+}
+
+.socialIcon {
+  width: 30px;
+  height: 25px;
+  fill: #555;      
+  transition: fill 0.3s ease;
+  cursor: pointer;   
+}
+
+/* ==================== ERROR/SUCCES ==================== */
+.errorMessage {
+  color: #ff4d4f;
+  background-color: #fff1f0;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 14px;
+}Խ
+
+.successMessage {
+  color: #52c41a;
+  background-color: #f6ffed;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 480px) {
+  .loginCard {
+    padding: 1.5rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .backgroundElement1,
+  .backgroundElement2 {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 320px) {
+  .loginContainer {
+    padding: 0.5rem;
+  }
+  
+  .loginCard {
+    padding: 1rem;
+  }
+  
+  .socialButtons {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
