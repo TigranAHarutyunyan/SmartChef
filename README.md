@@ -80,7 +80,39 @@ cd ../frontend
 npm start        # frontend
 ```
 
-6. **Open http://localhost:3000 and start cooking!**
+6. **Open http://localhost:5173 and start cooking!**  
+Backend API runs on http://localhost:3000
+
+---
+
+## ✦ Run with Docker Compose (Dev)
+
+This repo includes a `docker-compose.yaml` that starts:
+- PostgreSQL on `localhost:5432`
+- Backend API on `http://localhost:3000`
+- Frontend on `http://localhost:5173`
+
+```
+docker compose -f docker-compose.yaml up --build
+```
+
+Stop everything:
+```
+docker compose -f docker-compose.yaml down
+```
+
+### Environment Variables
+
+Backend (required for full functionality):
+- `OPENAI_API_KEY`
+- `SPOONACULAR_API_KEY`
+- `JWT_SECRET`
+- `SESSION_SECRET`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+
+Database variables (if you are not using `DATABASE_URL`):
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 
 ## ✦ Project Structure
 
