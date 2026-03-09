@@ -5,13 +5,13 @@ services:
         container_name: smartchef_db
         restart: always
         environment:
-            POSTGRES_USER: tigran_admin
-            POSTGRES_PASSWORD: chef_password
-            POSTGRES_DB: smartchef_db
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
         volumes:
             - postgres_data:/var/lib/postgresql/data
         ports:
-            - "5432:5432"
+            - "${DB_PORT}:${DB_PORT}"
     #2 backend
     backend:
         build:
@@ -22,7 +22,7 @@ services:
         depends_on:
             - db
         environment:
-            DATABASE_URL: postgres://tigran_admin:chef_password@db:5432/smartchef_db
+            DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
         ports:
             - "3000:3000"
         volumes:
