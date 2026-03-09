@@ -1,0 +1,49 @@
+services:
+    #1.Database
+    db:
+        image: postgres:15-alpine
+        container_name: smartchef_db
+        restart: always
+        environment:
+            POSTGRES_USER: tigran_admin
+            POSTGRES_PASSWORD: chef_password
+            POSTGRES_DB: smartchef_db
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+    #2 backend
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        container_name: smartchef_backend
+        restart: "always"
+        depends_on:
+            - db
+        environment:
+            DATABASE_URL: postgres://tigran_admin:chef_password@db:5432/smartchef_db
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./backend:/app
+            - /app/node_modules
+    # frontend
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: smartchef_frontend
+        ports:
+            - "5173:5173"
+        restart: "always"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+        stdin_open: true
+        tty: true
+
+volumes:
+    postgres_data:

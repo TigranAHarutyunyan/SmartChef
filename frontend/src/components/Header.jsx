@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Moon, Sun, LogOut, History, Edit, X, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Header.css';
@@ -35,26 +35,35 @@ const Header = ({ activeTab, setActiveTab, isDarkMode, toggleTheme, onHistoryCli
   const modalRef = useRef(null);
   
   const storedUser = localStorage.getItem('user');
-  const user = storedUser ? JSON.parse(storedUser) : { firstName: "M", lastName: "E" };
+  const user = useMemo(
+    () => (storedUser ? JSON.parse(storedUser) : { firstName: 'M', lastName: 'E' }),
+    [storedUser]
+  );
 
   useEffect(() => {
     // Set initial formData and initialData if empty
-    if (user && !formData.firstName && !formData.lastName && !formData.email) {
-      const userData = {
+    if (!user) return;
+
+    setFormData(prev => {
+      if (prev.firstName || prev.lastName || prev.email) return prev;
+      return {
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || '',
         currentPassword: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
       };
-      setFormData(userData);
-      setInitialData({
+    });
+
+    setInitialData(prev => {
+      if (prev.firstName || prev.lastName || prev.email) return prev;
+      return {
         firstName: user.firstName || '',
         lastName: user.lastName || '',
-        email: user.email || ''
-      });
-    }
+        email: user.email || '',
+      };
+    });
   }, [user]);
 
   useEffect(() => {
@@ -88,7 +97,7 @@ const Header = ({ activeTab, setActiveTab, isDarkMode, toggleTheme, onHistoryCli
     setSuccess('');
   };
 
-  const closeEditModal = () => {
+  const closeEditModal = useCallback(() => {
     setIsEditModalOpen(false);
     setChangePassword(false);
     setErrors({});
@@ -108,7 +117,7 @@ const Header = ({ activeTab, setActiveTab, isDarkMode, toggleTheme, onHistoryCli
         email: user.email || ''
       });
     }
-  };
+  }, [user]);
 
   const validatePasswords = () => {
     if (!changePassword) return true;
@@ -263,7 +272,7 @@ const Header = ({ activeTab, setActiveTab, isDarkMode, toggleTheme, onHistoryCli
       document.removeEventListener('mousedown', handleModalClickOutside);
       document.body.style.overflow = 'unset';
     };
-  }, [isEditModalOpen]);
+  }, [isEditModalOpen, closeEditModal]);
 
   useEffect(() => {
     const handleEscapeKey = (event) => {
@@ -276,7 +285,7 @@ const Header = ({ activeTab, setActiveTab, isDarkMode, toggleTheme, onHistoryCli
     return () => {
       document.removeEventListener('keydown', handleEscapeKey);
     };
-  }, [isEditModalOpen]);
+  }, [isEditModalOpen, closeEditModal]);
 
   const initials = user
     ? `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`

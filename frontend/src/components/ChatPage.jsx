@@ -2,6 +2,21 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChefHat, User, Sparkles, MessageCircle, CookingPot, Clock, Users, ExternalLink, Loader2, Camera, X, Calendar, Heart, Utensils, AlertCircle, Bookmark, Share2, Star } from 'lucide-react';
 import '../styles/ChatPage.css';
 
+const COMMON_ALLERGENS = [
+  'Nuts',
+  'Peanuts',
+  'Milk',
+  'Eggs',
+  'Fish',
+  'Shellfish',
+  'Soy',
+  'Wheat',
+  'Gluten',
+  'Sesame',
+  'Mustard',
+  'Celery',
+];
+
 const PersonalSetup = React.memo(({ 
   personalInfo, 
   setPersonalInfo, 
@@ -10,23 +25,8 @@ const PersonalSetup = React.memo(({
   error, 
   setError 
 }) => {
-  const commonAllergens = [
-    'Nuts',
-    'Peanuts',
-    'Milk',
-    'Eggs',
-    'Fish',
-    'Shellfish',
-    'Soy',
-    'Wheat',
-    'Gluten',
-    'Sesame',
-    'Mustard',
-    'Celery',
-  ];
-
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState(commonAllergens);
+  const [filteredSuggestions, setFilteredSuggestions] = useState(COMMON_ALLERGENS);
   const inputRef = useRef(null);
 
   const handleSave = useCallback(() => {
@@ -45,15 +45,15 @@ const PersonalSetup = React.memo(({
     const input = value.toLowerCase().split(', ').pop().trim();
     if (input) {
       setFilteredSuggestions(
-        commonAllergens.filter(allergen => 
+        COMMON_ALLERGENS.filter(allergen => 
           allergen.toLowerCase().includes(input)
         )
       );
     } else {
-      setFilteredSuggestions(commonAllergens);
+      setFilteredSuggestions(COMMON_ALLERGENS);
     }
     setShowSuggestions(true);
-  }, [setPersonalInfo, commonAllergens]);
+  }, [setPersonalInfo]);
 
   const handleAllergenSuggestionClick = useCallback((allergen) => {
     setPersonalInfo(prev => {
@@ -67,9 +67,9 @@ const PersonalSetup = React.memo(({
   }, [setPersonalInfo]);
 
   const handleAllergiesFocus = useCallback(() => {
-    setFilteredSuggestions(commonAllergens);
+    setFilteredSuggestions(COMMON_ALLERGENS);
     setShowSuggestions(true);
-  }, [commonAllergens]);
+  }, []);
 
   const handleAllergiesBlur = useCallback(() => {
     setTimeout(() => setShowSuggestions(false), 200);
