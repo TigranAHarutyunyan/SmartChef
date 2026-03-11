@@ -111,27 +111,34 @@ Backend (required for full functionality):
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 
-Database variables (if you are not using `DATABASE_URL`):
+Database variables (used by the backend DB config):
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 
 ## ✦ Project Structure
 
 ```
 SmartChef/
+├── docker-compose.yaml
 ├── backend/
-│   ├── controller/
-│   ├── routes/
-│   ├── services/
-│   ├── utils/
 │   ├── models/
-│   └── index.js
+│   ├── migrations/
+│   ├── routes/
+│   ├── controllers/
+│   ├── services/
+│   ├── middleware/
+│   ├── utils/
+│   ├── config/
+│   ├── Dockerfile
+│   ├── package.json
+│   └── server.js
 ├── frontend/
+│   ├── public/
 │   ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── App.js
+│   │   └── components/
+│   ├── Dockerfile
+│   └── package.json
+├── .gitignore
 ├── README.md
-└── .env (ignored)
 ```
 
 Feel free to contribute, submit issues, or fork this project!

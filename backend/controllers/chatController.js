@@ -7,9 +7,20 @@ const Event = require("../models/Event");
 const FavoriteService = require("../services/FavoriteService");
 const logger = require("../utils/logger");
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+let openaiClient = null;
+const getOpenAIClient = () => {
+    if (!process.env.OPENAI_API_KEY) return null;
+    if (!openaiClient) {
+        openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    }
+    return openaiClient;
+};
+
+const createNotConfiguredError = (serviceName) => {
+    const error = new Error(`${serviceName} is not configured`);
+    error.status = 501;
+    return error;
+};
 
 const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 const SPOONACULAR_BASE_URL = "https://api.spoonacular.com/recipes";
@@ -183,6 +194,53 @@ const generateAIResponse = async (
         chatContext
     );
 
+    const openai = getOpenAIClient();
+    if (!openai) {
+        if (dishAnalysis) {
+            throw createNotConfiguredError("OpenAI (image analysis)");
+        }
+
+        if (!userMessage && mode === "personal" && personalInfo) {
+            return "Your nutrition profile was saved. (Enable OpenAI to get personalized recommendations.)";
+        }
+        if (!userMessage && mode === "events" && eventInfo) {
+            return "Your event details were saved. (Enable OpenAI to get a full menu plan.)";
+        }
+
+        if (!recipes || recipes.length === 0) {
+            return (
+                "AI features are disabled (no OpenAI API key configured). " +
+                "If you want recipe search without AI, ensure Spoonacular is configured and send a message like: " +
+                '"I have chicken, rice, tomatoes".'
+            );
+        }
+
+        const lines = recipes.map((recipe, idx) => {
+            const used =
+                recipe.usedIngredients?.map((ing) => ing.name).join(", ") ||
+                "N/A";
+            const missed =
+                recipe.missedIngredients?.map((ing) => ing.name).join(", ") ||
+                "None";
+
+            return [
+                `${idx + 1}. ${recipe.title}`,
+                `   Ready in: ${recipe.readyInMinutes ?? "?"} min | Servings: ${
+                    recipe.servings ?? "?"
+                }`,
+                `   Uses: ${used}`,
+                `   Missing: ${missed}`,
+                recipe.sourceUrl ? `   Link: ${recipe.sourceUrl}` : null,
+            ]
+                .filter(Boolean)
+                .join("\n");
+        });
+
+        return `Here are some recipe ideas based on your message:\n\n${lines.join(
+            "\n\n"
+        )}\n\n(Enable OpenAI to get full conversational recommendations and pairings.)`;
+    }
+
     const messages = [{ role: "system", content: systemPrompt }];
 
     const contextMessages = formatChatContext(chatContext, userMessage);
@@ -240,6 +298,77 @@ const generateAIResponse = async (
 };
 
 const extractIngredients = async (userMessage) => {
+    const openai = getOpenAIClient();
+    if (!openai) {
+        const message = String(userMessage || "").toLowerCase();
+        const wantsMore =
+            /\b(more|other|different|another|else)\b/.test(message) &&
+            /\b(recipes?)\b/.test(message);
+        if (wantsMore) return "more_recipes";
+
+        const foodIntent = /\b(recipe|recipes|cook|cooking|meal|dinner|lunch|breakfast|snack|ingredients)\b/.test(
+            message
+        );
+
+        const stopwords = new Set([
+            "i",
+            "me",
+            "my",
+            "we",
+            "our",
+            "you",
+            "your",
+            "a",
+            "an",
+            "the",
+            "and",
+            "or",
+            "with",
+            "without",
+            "have",
+            "has",
+            "had",
+            "got",
+            "some",
+            "any",
+            "to",
+            "for",
+            "of",
+            "in",
+            "on",
+            "at",
+            "from",
+            "make",
+            "cook",
+            "cooking",
+            "recipe",
+            "recipes",
+            "dish",
+            "dishes",
+            "meal",
+            "meals",
+            "please",
+            "show",
+            "give",
+            "want",
+            "need",
+            "can",
+            "could",
+            "would",
+            "should",
+        ]);
+
+        const tokens = message
+            .replace(/[^a-z,\s]/g, " ")
+            .split(/[\s,]+/)
+            .map((t) => t.trim())
+            .filter((t) => t.length > 1 && !stopwords.has(t));
+
+        const unique = [...new Set(tokens)].slice(0, 8);
+        if (unique.length > 0) return unique.join(",");
+        return foodIntent ? "general_cooking" : "none";
+    }
+
     const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
@@ -295,6 +424,9 @@ const searchRecipes = async (
     if (!ingredients || ingredients === "none") {
         logger.warn("No ingredients provided to searchRecipes");
         return [];
+    }
+    if (!SPOONACULAR_API_KEY) {
+        throw createNotConfiguredError("Spoonacular API");
     }
 
     const cacheKey = `${ingredients}-${dietaryRestrictions}-${searchType}`;
@@ -365,6 +497,10 @@ const searchRecipes = async (
 };
 
 const searchDiverseRecipes = async (dietaryRestrictions = null) => {
+    if (!SPOONACULAR_API_KEY) {
+        throw createNotConfiguredError("Spoonacular API");
+    }
+
     const cuisines = [
         "italian",
         "mexican",
@@ -547,11 +683,10 @@ const analyzeDishImage = async (base64Image) => {
     }
 
     if (!process.env.OPENAI_API_KEY) {
-        const error = new Error("OpenAI API key is missing");
-        error.status = 500;
-        throw error;
+        throw createNotConfiguredError("OpenAI");
     }
 
+    const openai = getOpenAIClient();
     const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
@@ -614,6 +749,9 @@ const analyzeDishImage = async (base64Image) => {
 };
 
 const getRecipeDetails = async (recipeId) => {
+    if (!SPOONACULAR_API_KEY) {
+        throw createNotConfiguredError("Spoonacular API");
+    }
     try {
         const response = await axios.get(
             `${SPOONACULAR_BASE_URL}/${recipeId}/information`,
@@ -671,6 +809,13 @@ const generateChatTitle = async (
     ✅ "Quick Weeknight Dinners"
     ✅ "Seasonal Recipe Hunt"
     ✅ "Cocktail Hour Creations"`;
+    }
+
+    const openai = getOpenAIClient();
+    if (!openai) {
+        const raw = String(firstMessage || "").trim() || "SmartChef Chat";
+        const truncated = raw.length > 50 ? `${raw.slice(0, 47)}...` : raw;
+        return truncated.replace(/['"]/g, "");
     }
 
     const response = await openai.chat.completions.create({
